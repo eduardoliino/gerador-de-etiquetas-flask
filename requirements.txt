@@ -1,0 +1,5 @@
+Flask
+pandas
+openpyxl
+weasyprint
+qrcode[pil]
