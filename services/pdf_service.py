@@ -5,75 +5,57 @@ import base64
 from io import BytesIO
 from weasyprint import HTML, CSS
 
-# --- HTML e CSS TEMPLATES ---
-# Este CSS será aplicado a cada etiqueta individualmente.
-LABEL_CSS = """
-    body { margin: 0; font-family: 'Inter', sans-serif; }
-    .etiqueta {
-        width: 70mm;
-        height: 112mm; /* Proporção 1:1.6 */
-        border: 1px solid #d1d5db;
-        background-color: white;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        box-sizing: border-box; /* Garante que padding não aumente o tamanho */
-    }
-    .logo-container {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 12px;
-    }
-    .logo {
-        max-width: 100%;
-        object-fit: contain;
-    }
-    .info-text { font-size: 14.4px; line-height: 1.4; color: #1f2937; }
-    .qr-code { margin: 20px 0; }
-    .equipment-label { font-size: 12.8px; color: #4b5563; }
-    .equipment-value { font-weight: 700; font-size: 18px; color: #111827; margin-top: 2px; word-break: break-all; }
-    .company-name { font-weight: 600; }
-    .bottom-container { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
-"""
-
 
 def create_single_label_html(item_data, template_data):
-    """Cria o HTML para uma única etiqueta."""
+    nome_equipamento = item_data.get('nome', 'N/A')
+    identificador = item_data.get('identificador', 'N/A')
+    link_qr_code = item_data.get('link qr code', '')
 
-    # Gera o QR Code para o link da linha atual
-    qr_img = qrcode.make(item_data.get('LINK QR CODE', ''))
+    if not link_qr_code:
+        print(
+            f"Aviso: 'LINK QR CODE' não encontrado para o item: {nome_equipamento}")
+
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_H,
+        box_size=10,
+        border=2,
+    )
+    qr.add_data(link_qr_code or 'https://auvo.com.br')
+    qr.make(fit=True)
+    qr_img = qr.make_image(fill_color="black", back_color="white")
+
     buffered_qr = BytesIO()
     qr_img.save(buffered_qr, format="PNG")
     qr_base64 = base64.b64encode(buffered_qr.getvalue()).decode('utf-8')
 
     return f"""
         <div class="etiqueta">
-            <div class="logo-container" style="height: {template_data.get('logo_height', '50px')};">
-                <img class="logo" src="{template_data.get('logo_base64', '')}" style="max-height: {template_data.get('logo_height', '50px')};">
+            <div class="logo-container">
+                <img class="logo" src="{template_data.get('logo_base64', '')}" style="width: {template_data.get('logo_height', '80px')}; height: {template_data.get('logo_height', '80px')};" alt="Logo">
+
             </div>
             
-            <div style="margin: 10px 0;">
-                <p class="info-text company-name">{template_data.get('company_name', '')}</p>
-                <p class="info-text">{template_data.get('company_phone', '')}</p>
-                <p class="info-text">{template_data.get('company_email', '')}</p>
-            </div>
+            <div class="main-content">
+                <div class="company-info">
+                    <p class="info-text company-name">{template_data.get('company_name', '')}</p>
+                    <p class="info-text">{template_data.get('company_phone', '')}</p>
+                    <p class="info-text">{template_data.get('company_email', '')}</p>
+                </div>
 
-            <div class="qr-code">
-                <img src="data:image/png;base64,{qr_base64}">
+                <div class="qr-code">
+                    <img src="data:image/png;base64,{qr_base64}" alt="QR Code">
+                </div>
             </div>
             
             <div class="bottom-container">
                 <div>
                      <p class="equipment-label">Nome do equipamento</p>
-                     <p class="equipment-value">{item_data.get('Nome do equipamento', 'N/A')}</p>
+                     <p class="equipment-value">{nome_equipamento}</p>
                 </div>
                 <div>
                      <p class="equipment-label">Identificador</p>
-                     <p class="equipment-value">{item_data.get('Identificador', 'N/A')}</p>
+                     <p class="equipment-value">{identificador}</p>
                 </div>
             </div>
         </div>
@@ -81,9 +63,6 @@ def create_single_label_html(item_data, template_data):
 
 
 def generate_pdf(form_data, files):
-    """Função principal que orquestra a criação do PDF."""
-
-    # 1. Ler a planilha
     sheet_file = files.get('sheet')
     if not sheet_file:
         raise ValueError("Arquivo de planilha não encontrado.")
@@ -91,11 +70,11 @@ def generate_pdf(form_data, files):
     try:
         df = pd.read_excel(sheet_file) if sheet_file.filename.endswith(
             ('.xls', '.xlsx')) else pd.read_csv(sheet_file)
+        df.columns = [str(col).strip().lower() for col in df.columns]
         spreadsheet_data = df.to_dict(orient='records')
     except Exception as e:
         raise ValueError(f"Erro ao ler a planilha: {e}")
 
-    # 2. Preparar dados do template
     logo_base64 = ""
     if 'logo' in files:
         logo_file = files['logo']
@@ -106,43 +85,103 @@ def generate_pdf(form_data, files):
         "company_name": form_data.get('company_name'),
         "company_phone": form_data.get('company_phone'),
         "company_email": form_data.get('company_email'),
-        "logo_height": form_data.get('logo_height', '50px'),
         "logo_base64": logo_base64,
-        "layout_mode": form_data.get('layout_mode', 'grid')
+        "logo_height": form_data.get('logo_height', '80px'),
     }
 
-    # 3. Gerar HTML de todas as etiquetas
-    all_labels_html = "".join([create_single_label_html(
-        item, template_data) for item in spreadsheet_data])
+    page_template = '<div class="page">{}</div>'
+    all_pages_html = "".join([
+        page_template.format(create_single_label_html(item, template_data))
+        for item in spreadsheet_data
+    ])
 
-    # 4. Definir CSS da página com base no modo de layout
-    layout_mode = template_data['layout_mode']
-    page_css = ""
-    if layout_mode == 'grid':
-        page_css = """
-            @page { size: A4; margin: 1cm; }
-            body { 
-                display: grid; 
-                grid-template-columns: repeat(3, 1fr); 
-                gap: 5mm;
-                align-content: start;
-            }
-            .etiqueta { border: 1px dashed #ccc; width: 63.5mm; height: 93mm; padding: 10px;}
-        """
-    elif layout_mode == 'single':
-        page_css = """
-            @page { size: 70mm 112mm; margin: 0; }
-            .etiqueta { border: none; }
-        """
-    elif layout_mode == 'fullpage':
-        page_css = """
-            @page { size: A4; margin: 0; }
-            .etiqueta { width: 210mm; height: 297mm; border: none; padding: 2cm; }
-        """
+    combined_css_string = """
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0;
+        }
+        .page {
+            width: 210mm;
+            height: 297mm;
+            page-break-after: always;
+            border: 3mm solid #d1d5db;
+            box-sizing: border-box;
+        }
+        .etiqueta {
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            padding: 2cm;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo-container {
+            width: 100%;
+            min-height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .logo {
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        .company-info {
+            margin-bottom: 1cm;
+            text-align: center;
+        }
+        .info-text {
+            font-size: 18pt;
+            line-height: 1.5;
+        }
+        .company-name {
+            font-weight: 600;
+            font-size: 20pt;
+        }
+        .qr-code {
+            width: 80mm;
+            height: 80mm;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .qr-code > img {
+            width: 100%;
+            height: 100%;
+        }
+        .bottom-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: center;
+        }
+        .equipment-label {
+            font-size: 16pt;
+            color: #4b5563;
+        }
+        .equipment-value {
+            font-weight: 700;
+            font-size: 26pt;
+            margin-top: 4px;
+            word-break: break-word;
+        }
+    """
 
-    # 5. Combinar CSS e gerar o PDF
-    final_css = CSS(string=LABEL_CSS + page_css)
-    html_doc = HTML(string=f"<html><body>{all_labels_html}</body></html>")
-
-    pdf_bytes = html_doc.write_pdf(stylesheets=[final_css])
-    return pdf_bytes
+    html_doc = HTML(string=f"<html><body>{all_pages_html}</body></html>")
+    css_doc = CSS(string=combined_css_string)
+    return html_doc.write_pdf(stylesheets=[css_doc])

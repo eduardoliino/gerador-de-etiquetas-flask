@@ -17,55 +17,38 @@
         body { font-family: 'Inter', sans-serif; }
         
         #preview-card {
-            width: 280px; /* Largura fixa para manter proporção */
-            height: 448px; /* Altura fixa (proporção 1:1.6) */
+            width: 280px;
+            /* CORREÇÃO: Usa min-height para permitir que o cartão cresça */
+            min-height: 448px;
             border: 1px solid #d1d5db;
             background-color: white;
-            padding: 1.25rem; /* 20px */
+            padding: 1.25rem;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: min-height 0.2s;
         }
 
-        #preview-logo-container {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 0.75rem; /* 12px */
+        #preview-logo-container { 
+            width: 100%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            margin-bottom: 0.75rem; 
+            transition: height 0.2s;
         }
-        
-        #preview-logo {
-            max-width: 100%;
-            object-fit: contain;
-            transition: max-height 0.2s ease-in-out;
+        /* CORREÇÃO: Garante que o logo mantenha a proporção e não achate */
+        #preview-logo { 
+            max-width: 100%; 
+            max-height: 100%;
+            object-fit: contain; /* Mais importante */
         }
-
-        .info-text {
-            font-size: 0.9rem; /* 14.4px */
-            line-height: 1.4;
-            color: #1f2937;
-        }
-        
-        #preview-qr-code {
-            margin: 1.25rem 0; /* 20px */
-        }
-        
-        .equipment-label {
-            font-size: 0.8rem; /* 12.8px */
-            color: #4b5563;
-        }
-        
-        .equipment-value {
-            font-weight: 700;
-            font-size: 1.125rem; /* 18px */
-            color: #111827;
-            margin-top: 0.125rem; /* 2px */
-            word-break: break-all;
-        }
-
+        .info-text { font-size: 0.9rem; line-height: 1.4; color: #1f2937; }
+        #preview-qr-code { margin: 1.25rem 0; }
+        .equipment-label { font-size: 0.8rem; color: #4b5563; }
+        .equipment-value { font-weight: 700; font-size: 1.125rem; color: #111827; margin-top: 0.125rem; word-break: break-all; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -75,7 +58,7 @@
         <aside class="w-full lg:w-[450px] bg-white p-6 shadow-lg no-print overflow-y-auto">
             <header class="mb-6">
                 <h1 class="text-2xl font-bold text-gray-900">Gerador de Etiquetas</h1>
-                <p class="text-gray-500 mt-1">Siga os passos para gerar suas etiquetas em lote.</p>
+                <p class="text-gray-500 mt-1">Siga os passos para gerar as suas etiquetas em lote.</p>
             </header>
             
             <div class="space-y-6">
@@ -89,7 +72,8 @@
                         </div>
                         <div>
                             <label for="logo-size" class="block text-sm font-medium text-gray-700">Tamanho do Logo</label>
-                            <input type="range" id="logo-size" min="30" max="100" value="50" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <!-- CORREÇÃO: Incorporados os seus ajustes de `max` e `value` -->
+                            <input type="range" id="logo-size" min="30" max="160" value="80" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
                         </div>
                         <div>
                             <label for="company-name" class="block text-sm font-medium text-gray-700">Nome da Empresa</label>
@@ -97,11 +81,11 @@
                         </div>
                         <div>
                             <label for="company-phone" class="block text-sm font-medium text-gray-700">Telefone</label>
-                            <input type="text" id="company-phone" value="0800 000 0662" class="mt-1 w-full input-field" placeholder="Telefone de contato">
+                            <input type="text" id="company-phone" value="0800 000 0662" class="mt-1 w-full input-field" placeholder="Telefone de contacto">
                         </div>
                          <div>
                             <label for="company-email" class="block text-sm font-medium text-gray-700">E-mail</label>
-                            <input type="email" id="company-email" value="contato@auvo.com.br" class="mt-1 w-full input-field" placeholder="E-mail de contato">
+                            <input type="email" id="company-email" value="contato@auvo.com.br" class="mt-1 w-full input-field" placeholder="E-mail de contacto">
                         </div>
                     </div>
                 </section>
@@ -120,22 +104,9 @@
                     </div>
                 </section>
                 
-                <!-- 3. CONFIGURAÇÕES DE SAÍDA -->
-                 <section>
-                    <h2 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">3. Configurações de Saída</h2>
-                    <div>
-                        <label for="layout-mode" class="block text-sm font-medium text-gray-700 mb-2">Layout de Impressão (PDF)</label>
-                        <select id="layout-mode" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                            <option value="grid">Grade de Etiquetas</option>
-                            <option value="single">Uma Etiqueta por Página</option>
-                            <option value="fullpage">Página Inteira (Preenchimento)</option>
-                        </select>
-                    </div>
-                </section>
-
-                <!-- 4. GERAÇÃO FINAL -->
+                <!-- 3. GERAÇÃO FINAL -->
                 <section>
-                    <h2 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">4. Gerar Arquivo Final</h2>
+                    <h2 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">3. Gerar Ficheiro Final</h2>
                      <div class="space-y-3">
                         <button id="generate-final-btn" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
                             Gerar e Baixar PDF
@@ -150,8 +121,8 @@
         <main class="flex-1 p-8 bg-gray-200 flex flex-col items-center justify-center">
             <h2 class="text-xl font-bold text-gray-600 mb-4">Pré-visualização da Etiqueta</h2>
             <div id="preview-card">
-                <div id="preview-logo-container" style="height: 50px;">
-                    <img id="preview-logo" src="https://placehold.co/200x60/6366f1/FFFFFF?text=Logo" alt="logo da empresa" style="max-height: 50px;">
+                 <div id="preview-logo-container" style="height: 80px;">
+                    <img id="preview-logo" src="https://placehold.co/200x60/6366f1/FFFFFF?text=Logo" alt="logo da empresa">
                 </div>
                 
                 <div class="my-2">
@@ -176,60 +147,7 @@
         </main>
     </div>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // Elementos do DOM
-        const logoUpload = document.getElementById('logo-upload');
-        const logoSizeSlider = document.getElementById('logo-size');
-        const companyNameInput = document.getElementById('company-name');
-        const companyPhoneInput = document.getElementById('company-phone');
-        const companyEmailInput = document.getElementById('company-email');
-
-        // Elementos da pré-visualização
-        const previewLogo = document.getElementById('preview-logo');
-        const previewLogoContainer = document.getElementById('preview-logo-container');
-        const previewCompanyName = document.getElementById('preview-company-name');
-        const previewCompanyPhone = document.getElementById('preview-company-phone');
-        const previewCompanyEmail = document.getElementById('preview-company-email');
-        const qrCodeContainer = document.getElementById('preview-qr-code');
-
-        // Gerar QR Code de pré-visualização
-        new QRCode(qrCodeContainer, {
-            text: 'PREVIEW_QR_CODE',
-            width: 140,
-            height: 140,
-            correctLevel: QRCode.CorrectLevel.H
-        });
-
-        // --- ATUALIZAÇÕES EM TEMPO REAL ---
-
-        // Atualizar logo
-        logoUpload.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    previewLogo.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Atualizar tamanho do logo
-        logoSizeSlider.addEventListener('input', (event) => {
-            const size = event.target.value;
-            previewLogoContainer.style.height = `${size}px`;
-            previewLogo.style.maxHeight = `${size}px`;
-        });
-        
-        // Atualizar textos da empresa
-        companyNameInput.addEventListener('input', (e) => { previewCompanyName.textContent = e.target.value; });
-        companyPhoneInput.addEventListener('input', (e) => { previewCompanyPhone.textContent = e.target.value; });
-        companyEmailInput.addEventListener('input', (e) => { previewCompanyEmail.textContent = e.target.value; });
-
-        // A lógica para baixar a planilha modelo e gerar o PDF final
-        // será implementada no arquivo static/js/main.js e no backend.
-    });
-    </script>
+    <!-- SCRIPT CARREGADO COM CACHE-BUSTING -->
+    <script src="{{ url_for('static', filename='js/main.js') }}?v={{ timestamp }}" defer></script>
 </body>
 </html>
