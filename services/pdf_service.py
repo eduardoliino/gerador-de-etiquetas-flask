@@ -1,4 +1,4 @@
-# services/pdf_service.py
+
 import pandas as pd
 import qrcode
 import base64
@@ -7,7 +7,7 @@ from weasyprint import HTML, CSS
 
 # --- CSS DEFINITIONS ---
 
-# NOVO: Folha de estilo para o layout de "Etiqueta Centralizada"
+# Folha de estilo para o layout de "Etiqueta Centralizada"
 CSS_CARD_LAYOUT = """
     @page { size: A4; margin: 0; }
     body { font-family: 'Inter', sans-serif; margin: 0; }
@@ -38,7 +38,7 @@ CSS_CARD_LAYOUT = """
     .equipment-value { font-weight: 700; font-size: 11pt; color: #111827; margin-top: 1mm; word-break: break-all; }
 """
 
-# NOVO: Folha de estilo para o layout de "Página Inteira"
+# Folha de estilo para o layout de "Página Inteira"
 CSS_FULLPAGE_LAYOUT = """
     @page { size: A4; margin: 0; }
     body { font-family: 'Inter', sans-serif; margin: 0; }
@@ -86,7 +86,7 @@ def create_single_label_html(item_data, template_data):
     qr_img.save(buffered_qr, format="PNG")
     qr_base64 = base64.b64encode(buffered_qr.getvalue()).decode('utf-8')
 
-    # O HTML agora é universal para ambos os layouts. O CSS fará a diferenciação.
+    # O HTML é universal para ambos os layouts. O CSS fará a diferenciação.
     return f"""
       <div class="page-container">
         <div class="etiqueta">
