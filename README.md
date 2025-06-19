@@ -3,7 +3,7 @@
 ![Status](https://img.shields.io/badge/status-concluído-green)
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-2.x-black.svg)
-![License](https://img.shields.io/github/license/[SEU-USUARIO/NOME-DO-SEU-REPOSITORIO])
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/eduardoliino/gerador-de-etiquetas-flask/blob/main/LICENSE)
 
 Uma aplicação web construída com Flask e JavaScript para gerar etiquetas de identificação para equipamentos em massa a partir de uma planilha, com pré-visualização em tempo real e opções de layout customizáveis.
 
