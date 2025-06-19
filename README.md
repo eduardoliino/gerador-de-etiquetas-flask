@@ -9,7 +9,7 @@ Uma aplicação web construída com Flask e JavaScript para gerar etiquetas de i
 
 ---
 
-###  демонстрация проекта (Demonstração do Projeto)
+###  (Demonstração do Projeto)
 
 ![Interface do Gerador de Etiquetas mostrando o painel de controle à esquerda e a pré-visualização da etiqueta à direita](https://github.com/user-attachments/assets/3ed42315-7c1d-4f05-9edf-b28d1f516675)
 
