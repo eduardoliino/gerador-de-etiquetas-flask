@@ -3,19 +3,19 @@
 ![Status](https://img.shields.io/badge/status-concluído-green)
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-2.x-black.svg)
+![License](https://img.shields.io/github/license/[SEU-USUARIO/NOME-DO-SEU-REPOSITORIO])
 
-Uma aplicação web construída com Flask e JavaScript para gerar etiquetas de identificação em massa a partir de uma planilha, com pré-visualização em tempo real e opções de layout customizáveis.
-
----
-
-### Pré-visualização do Projeto
-
-
-Screenshot da Aplicação![image](https://github.com/user-attachments/assets/3ed42315-7c1d-4f05-9edf-b28d1f516675)
+Uma aplicação web construída com Flask e JavaScript para gerar etiquetas de identificação para equipamentos em massa a partir de uma planilha, com pré-visualização em tempo real e opções de layout customizáveis.
 
 ---
 
-###  Funcionalidades Principais
+###  демонстрация проекта (Demonstração do Projeto)
+
+![Interface do Gerador de Etiquetas mostrando o painel de controle à esquerda e a pré-visualização da etiqueta à direita](https://github.com/user-attachments/assets/3ed42315-7c1d-4f05-9edf-b28d1f516675)
+
+---
+
+### ✅ Funcionalidades Principais
 
 *   **Interface Intuitiva:** Painel de controle e área de pré-visualização lado a lado.
 *   **Pré-visualização em Tempo Real:** Veja como sua etiqueta ficará enquanto você edita as informações da empresa e o logo.
@@ -28,7 +28,7 @@ Screenshot da Aplicação![image](https://github.com/user-attachments/assets/3ed
 
 ---
 
-###  Tecnologias Utilizadas
+### 🛠️ Tecnologias Utilizadas
 
 *   **Backend:**
     *   **Python 3**
@@ -43,19 +43,33 @@ Screenshot da Aplicação![image](https://github.com/user-attachments/assets/3ed
 
 ---
 
-###  Como Executar o Projeto
+### 🚀 Como Executar o Projeto
 
 Siga os passos abaixo para executar a aplicação localmente.
 
-**1. Pré-requisitos:**
-*   Você precisa ter o **Python 3.8 ou superior** instalado.
-*   Você precisa ter o `pip` (gerenciador de pacotes do Python) instalado.
-
-**2. Clone o Repositório:**
+**1. Clone o Repositório:**
 ```bash
-git clone https://github.com/seu-usuario/nome-do-seu-repositorio.git
-cd nome-do-seu-repositorio
+git clone https://github.com/[SEU-USUARIO/NOME-DO-SEU-REPOSITORIO].git
+cd NOME-DO-SEU-REPOSITORIO
 ```
+*(Substitua `[SEU-USUARIO/NOME-DO-SEU-REPOSITORIO]` pelo URL correto do seu projeto)*
+
+**2. Instale as Dependências de Sistema (Passo Crucial!)**
+
+A biblioteca `WeasyPrint` requer algumas dependências que precisam ser instaladas manualmente no seu sistema operacional antes de instalar os pacotes Python.
+
+*   **Para Windows:**
+    A maneira mais fácil é instalar um ambiente de execução GTK3. Baixe e instale a última versão do `gtk3-runtime` compatível com sua arquitetura (win64). Após a instalação, **é essencial adicionar a pasta de instalação (ex: `C:\Program Files\GTK3-Runtime Win64\bin`) ao `PATH` do sistema**, para que o Python possa encontrar os arquivos necessários (`.dll`).
+
+*   **Para macOS (usando Homebrew):**
+    ```bash
+    brew install pango cairo libffi
+    ```
+
+*   **Para Linux (Debian/Ubuntu):**
+    ```bash
+    sudo apt-get install libpango-1.0-0 libpangoft2-1.0-0 libcairo2 libffi-dev
+    ```
 
 **3. Crie e Ative um Ambiente Virtual (Recomendado):**
 *   **Windows:**
@@ -69,7 +83,7 @@ cd nome-do-seu-repositorio
     source venv/bin/activate
     ```
 
-**4. Instale as Dependências:**
+**4. Instale as Dependências Python:**
 O arquivo `requirements.txt` contém todas as bibliotecas Python necessárias.
 ```bash
 pip install -r requirements.txt
@@ -81,11 +95,11 @@ python app.py
 ```
 
 **6. Acesse no Navegador:**
-Abra seu navegador e acesse [http://127.0.0.1:5000](http://127.0.0.1:5000). A aplicação estará funcionando!
+Abra seu navegador e acesse **[http://127.0.0.1:5000](http://127.0.0.1:5000)**. A aplicação estará funcionando!
 
 ---
 
-###  Estrutura do Projeto
+### 📂 Estrutura do Projeto
 ```
 .
 ├── app.py              # Ponto de entrada da aplicação Flask
@@ -104,12 +118,12 @@ Abra seu navegador e acesse [http://127.0.0.1:5000](http://127.0.0.1:5000). A ap
 
 ---
 
-###  Licença
+### 📄 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
 ---
 
-###  Autor
+### 👨‍💻 Autor
 
-Criado por **[Eduardo Lino]**.
+Criado por **Eduardo Lino**.
