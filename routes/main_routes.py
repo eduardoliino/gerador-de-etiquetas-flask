@@ -12,7 +12,7 @@ def index():
     return render_template('index.html')
 
 
-# NOVO: Endpoint para gerar e baixar a planilha modelo .xlsx
+# Endpoint para gerar e baixar a planilha modelo .xlsx
 @main_bp.route('/download-template')
 def download_template():
     """Cria e serve um arquivo .xlsx modelo para download."""

@@ -7,7 +7,7 @@ from weasyprint import HTML, CSS
 
 # --- CSS DEFINITIONS ---
 
-# NOVO: Folha de estilo para o layout de "Etiqueta Centralizada"
+# Folha de estilo para o layout de "Etiqueta Centralizada"
 CSS_CARD_LAYOUT = """
     @page { size: A4; margin: 0; }
     body { font-family: 'Inter', sans-serif; margin: 0; }
@@ -38,7 +38,7 @@ CSS_CARD_LAYOUT = """
     .equipment-value { font-weight: 700; font-size: 11pt; color: #111827; margin-top: 1mm; word-break: break-all; }
 """
 
-# NOVO: Folha de estilo para o layout de "Página Inteira"
+# Folha de estilo para o layout de "Página Inteira"
 CSS_FULLPAGE_LAYOUT = """
     @page { size: A4; margin: 0; }
     body { font-family: 'Inter', sans-serif; margin: 0; }
@@ -148,7 +148,7 @@ def generate_pdf(form_data, files):
     all_pages_html = "".join([create_single_label_html(
         item, template_data) for item in spreadsheet_data])
 
-    # NOVO: Lógica para escolher a folha de estilo correta
+    # Lógica para escolher a folha de estilo correta
     # Padrão para 'card' por segurança
     layout_choice = form_data.get('layout_style', 'card')
 

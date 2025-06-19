@@ -1,4 +1,4 @@
-# app.py (Atualizado com cache-busting)
+# app.py 
 from flask import Flask, render_template
 import time  # Importa a biblioteca de tempo
 
