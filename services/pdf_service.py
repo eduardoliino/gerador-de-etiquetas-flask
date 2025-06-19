@@ -5,22 +5,79 @@ import base64
 from io import BytesIO
 from weasyprint import HTML, CSS
 
+# --- CSS DEFINITIONS ---
+
+# NOVO: Folha de estilo para o layout de "Etiqueta Centralizada"
+CSS_CARD_LAYOUT = """
+    @page { size: A4; margin: 0; }
+    body { font-family: 'Inter', sans-serif; margin: 0; }
+    .page-container {
+        width: 210mm; height: 297mm;
+        page-break-after: always;
+        display: flex; justify-content: center; align-items: center;
+    }
+    .etiqueta {
+        width: 74mm; min-height: 118mm;
+        background-color: white;
+        border: 1px solid #d1d5db;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        padding: 10mm;
+        box-sizing: border-box;
+        display: flex; flex-direction: column; align-items: center; text-align: center;
+    }
+    /* ... (resto do css do card) */
+    .logo-container { margin-bottom: 5mm; }
+    .logo-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .company-info { margin: 2mm 0; }
+    .info-text { font-size: 9pt; line-height: 1.4; color: #1f2937; }
+    .company-name { font-weight: 700; }
+    .qr-code { margin: 5mm 0; width: 40mm; height: 40mm; }
+    .qr-code img { width: 100%; height: 100%; }
+    .bottom-container { margin-top: auto; width: 100%; display: flex; flex-direction: column; gap: 4mm; }
+    .equipment-label { font-size: 8pt; color: #4b5563; }
+    .equipment-value { font-weight: 700; font-size: 11pt; color: #111827; margin-top: 1mm; word-break: break-all; }
+"""
+
+# NOVO: Folha de estilo para o layout de "Página Inteira"
+CSS_FULLPAGE_LAYOUT = """
+    @page { size: A4; margin: 0; }
+    body { font-family: 'Inter', sans-serif; margin: 0; }
+    .page-container {
+        width: 210mm; height: 297mm;
+        page-break-after: always;
+        /* Adicionado para manter a borda dentro da página */
+        padding: 5mm; 
+        box-sizing: border-box;
+    }
+    .etiqueta {
+        width: 100%; height: 100%;
+        padding: 20mm; /* Ajustado por causa do padding da página */
+        box-sizing: border-box;
+        display: flex; flex-direction: column; align-items: center; text-align: center;
+        
+        /* ALTERADO: Borda adicionada */
+        border: 1px solid #d1d5db;
+    }
+    .logo-container { margin-bottom: 10mm; }
+    .logo-container img { max-width: 80%; object-fit: contain; }
+    .company-info { margin-bottom: 10mm; }
+    .info-text { font-size: 14pt; line-height: 1.5; color: #1f2937; }
+    .company-name { font-weight: 600; font-size: 16pt; }
+    .qr-code { margin: 10mm 0; width: 70mm; height: 70mm; }
+    .qr-code img { width: 100%; height: 100%; }
+    .bottom-container { margin-top: auto; width: 100%; display: flex; flex-direction: column; gap: 8mm; }
+    .equipment-label { font-size: 14pt; color: #4b5563; }
+    .equipment-value { font-weight: 700; font-size: 24pt; color: #111827; margin-top: 1mm; word-break: break-all; }
+"""
+
 
 def create_single_label_html(item_data, template_data):
     nome_equipamento = item_data.get('nome', 'N/A')
     identificador = item_data.get('identificador', 'N/A')
     link_qr_code = item_data.get('link qr code', '')
 
-    if not link_qr_code:
-        print(
-            f"Aviso: 'LINK QR CODE' não encontrado para o item: {nome_equipamento}")
-
     qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_H,
-        box_size=10,
-        border=2,
-    )
+        version=1, error_correction=qrcode.constants.ERROR_CORRECT_H, box_size=10, border=2)
     qr.add_data(link_qr_code or 'https://auvo.com.br')
     qr.make(fit=True)
     qr_img = qr.make_image(fill_color="black", back_color="white")
@@ -29,36 +86,35 @@ def create_single_label_html(item_data, template_data):
     qr_img.save(buffered_qr, format="PNG")
     qr_base64 = base64.b64encode(buffered_qr.getvalue()).decode('utf-8')
 
+    # O HTML agora é universal para ambos os layouts. O CSS fará a diferenciação.
     return f"""
+      <div class="page-container">
         <div class="etiqueta">
             <div class="logo-container">
-                <img class="logo" src="{template_data.get('logo_base64', '')}" style="width: {template_data.get('logo_height', '80px')}; height: {template_data.get('logo_height', '80px')};" alt="Logo">
-
+                <img src="{template_data.get('logo_base64', '')}"
+                     style="height: {template_data.get('logo_height', '80px')};"
+                     alt="Logo">
             </div>
-            
-            <div class="main-content">
-                <div class="company-info">
-                    <p class="info-text company-name">{template_data.get('company_name', '')}</p>
-                    <p class="info-text">{template_data.get('company_phone', '')}</p>
-                    <p class="info-text">{template_data.get('company_email', '')}</p>
-                </div>
-
-                <div class="qr-code">
-                    <img src="data:image/png;base64,{qr_base64}" alt="QR Code">
-                </div>
+            <div class="company-info">
+                <p class="info-text company-name">{template_data.get('company_name', '')}</p>
+                <p class="info-text">{template_data.get('company_phone', '')}</p>
+                <p class="info-text">{template_data.get('company_email', '')}</p>
             </div>
-            
+            <div class="qr-code">
+                <img src="data:image/png;base64,{qr_base64}" alt="QR Code">
+            </div>
             <div class="bottom-container">
                 <div>
-                     <p class="equipment-label">Nome do equipamento</p>
-                     <p class="equipment-value">{nome_equipamento}</p>
+                      <p class="equipment-label">Nome do equipamento</p>
+                      <p class="equipment-value">{nome_equipamento}</p>
                 </div>
                 <div>
-                     <p class="equipment-label">Identificador</p>
-                     <p class="equipment-value">{identificador}</p>
+                      <p class="equipment-label">Identificador</p>
+                      <p class="equipment-value">{identificador}</p>
                 </div>
             </div>
         </div>
+      </div>
     """
 
 
@@ -89,99 +145,19 @@ def generate_pdf(form_data, files):
         "logo_height": form_data.get('logo_height', '80px'),
     }
 
-    page_template = '<div class="page">{}</div>'
-    all_pages_html = "".join([
-        page_template.format(create_single_label_html(item, template_data))
-        for item in spreadsheet_data
-    ])
+    all_pages_html = "".join([create_single_label_html(
+        item, template_data) for item in spreadsheet_data])
 
-    combined_css_string = """
-        @page {
-            size: A4;
-            margin: 0;
-        }
-        body { 
-            font-family: 'Inter', sans-serif; 
-            margin: 0;
-        }
-        .page {
-            width: 210mm;
-            height: 297mm;
-            page-break-after: always;
-            border: 3mm solid #d1d5db;
-            box-sizing: border-box;
-        }
-        .etiqueta {
-            width: 100%;
-            height: 100%;
-            background-color: white;
-            padding: 2cm;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .logo-container {
-            width: 100%;
-            min-height: 100px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .logo {
-            object-fit: cover;
-            border-radius: 6px;
-        }
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-        }
-        .company-info {
-            margin-bottom: 1cm;
-            text-align: center;
-        }
-        .info-text {
-            font-size: 18pt;
-            line-height: 1.5;
-        }
-        .company-name {
-            font-weight: 600;
-            font-size: 20pt;
-        }
-        .qr-code {
-            width: 80mm;
-            height: 80mm;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .qr-code > img {
-            width: 100%;
-            height: 100%;
-        }
-        .bottom-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            text-align: center;
-        }
-        .equipment-label {
-            font-size: 16pt;
-            color: #4b5563;
-        }
-        .equipment-value {
-            font-weight: 700;
-            font-size: 26pt;
-            margin-top: 4px;
-            word-break: break-word;
-        }
-    """
+    # NOVO: Lógica para escolher a folha de estilo correta
+    # Padrão para 'card' por segurança
+    layout_choice = form_data.get('layout_style', 'card')
+
+    if layout_choice == 'fullpage':
+        final_css_string = CSS_FULLPAGE_LAYOUT
+    else:
+        final_css_string = CSS_CARD_LAYOUT
 
     html_doc = HTML(string=f"<html><body>{all_pages_html}</body></html>")
-    css_doc = CSS(string=combined_css_string)
+    css_doc = CSS(string=final_css_string)
+
     return html_doc.write_pdf(stylesheets=[css_doc])

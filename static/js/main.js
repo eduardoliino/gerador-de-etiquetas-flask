@@ -76,15 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.companyEmailInput.addEventListener('input', () => updatePreviewText(elements.companyEmailInput, elements.previewCompanyEmail, 'E-mail'));
     
     elements.generateSheetBtn.addEventListener('click', () => {
-        const headers = ["Nome", "Identificador", "LINK QR CODE"];
-        const csvContent = "data:text/csv;charset=utf-8," + headers.join(",");
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "modelo_etiquetas.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        window.location.href = '/download-template';
     });
     
     elements.fileUploadInput.addEventListener('change', (event) => {
@@ -120,6 +112,10 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('company_phone', elements.companyPhoneInput.value);
         formData.append('company_email', elements.companyEmailInput.value);
         formData.append('logo_height', elements.previewLogoContainer.style.height);
+
+        const selectedLayout = document.querySelector('input[name="layout-option"]:checked').value;
+        formData.append('layout_style', selectedLayout);
+
 
         try {
             const response = await fetch('/generate', { method: 'POST', body: formData });
