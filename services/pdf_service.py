@@ -1,4 +1,4 @@
-# services/pdf_service.py
+
 import pandas as pd
 import qrcode
 import base64
@@ -86,7 +86,7 @@ def create_single_label_html(item_data, template_data):
     qr_img.save(buffered_qr, format="PNG")
     qr_base64 = base64.b64encode(buffered_qr.getvalue()).decode('utf-8')
 
-    # O HTML agora é universal para ambos os layouts. O CSS fará a diferenciação.
+    # O HTML é universal para ambos os layouts. O CSS fará a diferenciação.
     return f"""
       <div class="page-container">
         <div class="etiqueta">

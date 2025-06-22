@@ -1,6 +1,5 @@
-# app.py 
 from flask import Flask, render_template
-import time  # Importa a biblioteca de tempo
+import time 
 
 
 def create_app():
@@ -10,11 +9,8 @@ def create_app():
     from routes.main_routes import main_bp
     app.register_blueprint(main_bp)
 
-    # Esta função injeta variáveis em todos os templates
     @app.context_processor
     def inject_timestamp():
-        # Gera um 'timestamp' (número único baseado na hora atual)
-        # para forçar o navegador a recarregar ficheiros estáticos.
         return {'timestamp': int(time.time())}
 
     return app
