@@ -11,9 +11,8 @@ Uma aplicação web construída com Flask e JavaScript para gerar etiquetas de i
 
 ###  (Demonstração do Projeto)
 
-**[NOTA PARA VOCÊ: Lembre-se de tirar um novo print da tela, mostrando as opções "PDF Único" e "ZIP", e atualizar esta imagem.]**
+![Interface do Gerador de Etiquetas mostrando o painel de controle à esquerda e a pré-visualização da etiqueta à direita](https://github.com/user-attachments/assets/475eef55-3dd0-4cc0-82fb-0f24eacff10c)
 
-![Interface do Gerador de Etiquetas mostrando o painel de controle à esquerda e a pré-visualização da etiqueta à direita](![image](https://github.com/user-attachments/assets/475eef55-3dd0-4cc0-82fb-0f24eacff10c)
 
 ---
 
