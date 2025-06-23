@@ -16,7 +16,7 @@ Uma aplicação web construída com Flask e JavaScript para gerar etiquetas de i
 
 ---
 
-### ✅ Funcionalidades Principais (Atualizado)
+### ✅ Funcionalidades Principais 
 
 *   **Interface Intuitiva:** Painel de controle e área de pré-visualização lado a lado.
 *   **Pré-visualização em Tempo Real:** Veja como sua etiqueta ficará enquanto você edita as informações da empresa e o logo.
