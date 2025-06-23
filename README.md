@@ -103,7 +103,7 @@ Abra seu navegador e acesse **[http://127.0.0.1:5000](http://127.0.0.1:5000)**. 
 
 ---
 
-### 📂 Estrutura do Projeto (Atualizado)
+### 📂 Estrutura do Projeto 
 ```
 .
 ├── app.py              # Ponto de entrada da aplicação Flask
