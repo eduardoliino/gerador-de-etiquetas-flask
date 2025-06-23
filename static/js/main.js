@@ -1,53 +1,48 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- VERIFICAÇÃO INICIAL DE ELEMENTOS ---
-    const getElement = (id) => {
+    // Função auxiliar para pegar elementos do DOM
+    const getElement = (id, required = true) => {
         const el = document.getElementById(id);
-        if (!el) {
-            const errorMessage = `Erro Crítico: O elemento com o ID '#${id}' não foi encontrado no seu ficheiro 'index.html'. Verifique se o ID está correto.`;
-            console.error(errorMessage);
-            alert(errorMessage);
-            throw new Error(errorMessage);
+        if (!el && required) {
+            console.error(`Elemento essencial #${id} não foi encontrado. Verifique o index.html.`);
+            throw new Error(`Elemento essencial #${id} não encontrado.`);
         }
         return el;
     };
 
-    let elements;
-    try {
-        elements = {
-            logoUpload: getElement('logo-upload'),
-            logoSizeSlider: getElement('logo-size'),
-            companyNameInput: getElement('company-name'),
-            companyPhoneInput: getElement('company-phone'),
-            companyEmailInput: getElement('company-email'),
-            generateSheetBtn: getElement('generate-sheet-btn'),
-            fileUploadInput: getElement('fileUpload'),
-            generateFinalBtn: getElement('generate-final-btn'),
-            generateWarning: getElement('generate-warning'),
-            previewLogo: getElement('preview-logo'),
-            previewLogoContainer: getElement('preview-logo-container'),
-            previewCompanyName: getElement('preview-company-name'),
-            previewCompanyPhone: getElement('preview-company-phone'),
-            previewCompanyEmail: getElement('preview-company-email'),
-            previewEquipmentName: getElement('preview-equipment-name'),
-            previewEquipmentId: getElement('preview-equipment-id'),
-            qrCodeContainer: getElement('preview-qr-code')
-        };
-    } catch (error) {
-        return; // Para a execução se um elemento não for encontrado.
-    }
+    // --- Seleção de Elementos ---
+    const elements = {
+        logoUploadInput: getElement('logo-upload'),
+        logoSizeSlider: getElement('logo-size'),
+        companyNameInput: getElement('company-name'),
+        companyPhoneInput: getElement('company-phone'),
+        companyEmailInput: getElement('company-email'),
+        fileUploadInput: getElement('fileUpload'),
+        generateSheetBtn: getElement('generate-sheet-btn'),
+        generateFinalBtn: getElement('generate-final-btn'),
+        generateWarning: getElement('generate-warning'),
+        logoSizeValue: getElement('logo-size-value', false), // Este não é essencial
+        fileUploadName: getElement('file-upload-name', false), // Nem este
+        previewLogo: getElement('preview-logo'),
+        previewLogoContainer: getElement('preview-logo-container'),
+        previewCompanyName: getElement('preview-company-name'),
+        previewCompanyPhone: getElement('preview-company-phone'),
+        previewCompanyEmail: getElement('preview-company-email'),
+        qrCodeContainer: getElement('preview-qr-code')
+    };
     
-    // --- ESTADO DA APLICAÇÃO ---
     let uploadedSheetFile = null;
     let uploadedLogoFile = null;
 
-    // --- QR CODE DE PRÉ-VISUALIZAÇÃO ---
-    new QRCode(elements.qrCodeContainer, {
-        text: 'PREVIEW_QR_CODE', width: 140, height: 140, correctLevel: QRCode.CorrectLevel.H
+    const qrCode = new QRCode(elements.qrCodeContainer, {
+        text: 'https://seusite.com', width: 144, height: 144, correctLevel: QRCode.CorrectLevel.H
     });
 
-    // --- EVENT LISTENERS ---
-
-    elements.logoUpload.addEventListener('change', (event) => {
+    const updatePreviewText = (input, preview, defaultText) => {
+        preview.textContent = input.value.trim() || defaultText;
+    };
+    
+    // --- Event Listeners ---
+    elements.logoUploadInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
         if (file) {
             uploadedLogoFile = file;
@@ -58,49 +53,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     elements.logoSizeSlider.addEventListener('input', (event) => {
-    const size = event.target.value;
-    elements.previewLogoContainer.style.height = `${size}px`;
-    elements.previewLogo.style.width = `${size}px`;
-    elements.previewLogo.style.height = `${size}px`;
-    elements.previewLogo.style.objectFit = 'cover';
-    elements.previewLogo.style.borderRadius = '8px';
-    
+        const size = event.target.value;
+        elements.previewLogoContainer.style.height = `${size}px`;
+        if (elements.logoSizeValue) elements.logoSizeValue.textContent = size;
     });
     
-    const updatePreviewText = (input, preview, defaultText) => {
-        preview.textContent = input.value || defaultText;
-    };
-
     elements.companyNameInput.addEventListener('input', () => updatePreviewText(elements.companyNameInput, elements.previewCompanyName, 'Nome da Empresa'));
     elements.companyPhoneInput.addEventListener('input', () => updatePreviewText(elements.companyPhoneInput, elements.previewCompanyPhone, 'Telefone'));
     elements.companyEmailInput.addEventListener('input', () => updatePreviewText(elements.companyEmailInput, elements.previewCompanyEmail, 'E-mail'));
     
-    elements.generateSheetBtn.addEventListener('click', () => {
-        window.location.href = '/download-template';
-    });
+    elements.generateSheetBtn.addEventListener('click', () => { window.location.href = '/download-template'; });
     
     elements.fileUploadInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
-
+        if (elements.fileUploadName) {
+            elements.fileUploadName.textContent = file ? file.name : "Nenhum ficheiro selecionado";
+        }
         if (file) {
             uploadedSheetFile = file;
             elements.generateFinalBtn.disabled = false;
-            elements.generateWarning.classList.add('hidden');
-            elements.previewEquipmentName.textContent = "Dados da Planilha...";
-            elements.previewEquipmentId.textContent = "Carregados";
+            elements.generateWarning.style.display = 'none';
         } else {
             uploadedSheetFile = null;
             elements.generateFinalBtn.disabled = true;
-            elements.generateWarning.classList.remove('hidden');
+            elements.generateWarning.style.display = 'block';
         }
     });
 
     elements.generateFinalBtn.addEventListener('click', async () => {
-        if (!uploadedSheetFile) {
-            alert("Erro: Nenhum ficheiro de planilha carregado. Por favor, faça o upload de um ficheiro.");
-            return;
-        }
+        if (!uploadedSheetFile) return alert("Por favor, faça o upload de uma planilha.");
 
+        const originalBtnText = elements.generateFinalBtn.textContent;
         elements.generateFinalBtn.textContent = 'Gerando...';
         elements.generateFinalBtn.disabled = true;
 
@@ -113,32 +96,38 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('company_email', elements.companyEmailInput.value);
         formData.append('logo_height', elements.previewLogoContainer.style.height);
 
-        const selectedLayout = document.querySelector('input[name="layout-option"]:checked').value;
-        formData.append('layout_style', selectedLayout);
-
+        const layoutStyle = document.querySelector('input[name="layout-option"]:checked').value;
+        const outputMode = document.querySelector('input[name="output-mode"]:checked').value;
+        formData.append('layout_style', layoutStyle);
+        formData.append('output_mode', outputMode);
 
         try {
             const response = await fetch('/generate', { method: 'POST', body: formData });
+            
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || `O servidor retornou o erro ${response.status}`);
+                throw new Error(errorData.error || `Erro do servidor: ${response.status}`);
             }
-            const pdfBlob = await response.blob();
-            const url = window.URL.createObjectURL(pdfBlob);
+
+            const downloadFilename = outputMode === 'multiple' ? 'etiquetas.zip' : 'etiquetas.pdf';
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = url;
-            a.download = 'etiquetas.pdf';
+            a.download = downloadFilename;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
             a.remove();
+
         } catch (error) {
-            console.error("Erro ao gerar PDF:", error);
-            alert(`Falha na geração: ${error.message}`);
+            alert(`Falha na geração do arquivo: ${error.message}`);
         } finally {
-            elements.generateFinalBtn.textContent = 'Gerar e Baixar PDF';
-            if (uploadedSheetFile) elements.generateFinalBtn.disabled = false;
+            elements.generateFinalBtn.textContent = originalBtnText;
+            if(uploadedSheetFile) {
+                elements.generateFinalBtn.disabled = false;
+            }
         }
     });
 });

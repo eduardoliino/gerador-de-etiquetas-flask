@@ -11,11 +11,13 @@ Uma aplicação web construída com Flask e JavaScript para gerar etiquetas de i
 
 ###  (Demonstração do Projeto)
 
+**[NOTA PARA VOCÊ: Lembre-se de tirar um novo print da tela, mostrando as opções "PDF Único" e "ZIP", e atualizar esta imagem.]**
+
 ![Interface do Gerador de Etiquetas mostrando o painel de controle à esquerda e a pré-visualização da etiqueta à direita](https://github.com/user-attachments/assets/3ed42315-7c1d-4f05-9edf-b28d1f516675)
 
 ---
 
-### ✅ Funcionalidades Principais
+### ✅ Funcionalidades Principais (Atualizado)
 
 *   **Interface Intuitiva:** Painel de controle e área de pré-visualização lado a lado.
 *   **Pré-visualização em Tempo Real:** Veja como sua etiqueta ficará enquanto você edita as informações da empresa e o logo.
@@ -24,7 +26,10 @@ Uma aplicação web construída com Flask e JavaScript para gerar etiquetas de i
 *   **QR Code Dinâmico:** Cada etiqueta gera automaticamente um QR Code baseado no link fornecido na planilha.
 *   **Layouts de PDF Flexíveis:** Escolha entre dois layouts para o PDF final:
     1.  **Etiqueta Centralizada:** Uma etiqueta com bordas, centralizada em uma página A4 (ideal para visualização e impressão única).
-    2.  **Página Inteira:** A etiqueta ocupa toda a página A4, otimizada para impressão direta em papel especial.
+    2.  **Página Inteira:** A etiqueta ocupa toda a página A4, otimizada para impressão direta e com layout flexível que se ajusta ao tamanho da logo.
+*   **Múltiplos Modos de Saída:** Exporte seu trabalho de duas maneiras:
+    1.  **PDF Único:** Todas as etiquetas são consolidadas em um único arquivo PDF.
+    2.  **Arquivo ZIP:** Gera um arquivo `.zip` contendo um PDF individual para cada etiqueta.
 
 ---
 
@@ -43,7 +48,7 @@ Uma aplicação web construída com Flask e JavaScript para gerar etiquetas de i
 
 ---
 
-### 🚀 Como Executar o Projeto
+###  Como Executar o Projeto
 
 Siga os passos abaixo para executar a aplicação localmente.
 
@@ -99,7 +104,7 @@ Abra seu navegador e acesse **[http://127.0.0.1:5000](http://127.0.0.1:5000)**. 
 
 ---
 
-### 📂 Estrutura do Projeto
+### 📂 Estrutura do Projeto (Atualizado)
 ```
 .
 ├── app.py              # Ponto de entrada da aplicação Flask
@@ -108,8 +113,11 @@ Abra seu navegador e acesse **[http://127.0.0.1:5000](http://127.0.0.1:5000)**. 
 ├── routes/
 │   └── main_routes.py  # Define as rotas (URLs) da aplicação
 ├── services/
-│   └── pdf_service.py  # Lógica principal de geração do PDF
+│   └── pdf_service.py  # Lógica principal de geração do PDF e ZIP
 ├── static/
+│   ├── css/
+│   │   ├── card_layout.css
+│   │   └── fullpage_layout.css
 │   └── js/
 │       └── main.js     # JavaScript para interatividade do frontend
 └── templates/
@@ -127,3 +135,4 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 ### 👨‍💻 Autor
 
 Criado por **Eduardo Lino**.
+```

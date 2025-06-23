@@ -1,0 +1,74 @@
+@page { 
+    size: A4; 
+    margin: 0; 
+}
+body { 
+    font-family: 'Inter', sans-serif; 
+    margin: 0; 
+}
+.page-container { 
+    width: 210mm; 
+    height: 297mm; 
+    page-break-after: always; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+}
+.etiqueta { 
+    width: 74mm; 
+    min-height: 118mm; 
+    background-color: white; 
+    border: 1px solid #e5e7eb; /* Cor da borda  */
+    padding: 10mm; 
+    box-sizing: border-box; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    text-align: center; 
+}
+.logo-container { 
+    margin-bottom: 5mm; 
+}
+.logo-container img { 
+    max-width: 100%; 
+    max-height: 100%; 
+    object-fit: contain; 
+}
+.company-info { 
+    margin: 2mm 0; 
+}
+.info-text { 
+    font-size: 9pt; 
+    line-height: 1.4; 
+    color: #1f2937; 
+}
+.company-name { 
+    font-weight: bold; 
+}
+.qr-code { 
+    margin: 5mm 0; 
+    width: 40mm; 
+    height: 40mm; 
+}
+.qr-code img { 
+    width: 100%; 
+    height: 100%; 
+}
+.bottom-container { 
+    margin-top: auto; 
+    width: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 4mm; 
+}
+.equipment-label { 
+    font-size: 8pt; 
+    color: #4b5563; 
+}
+.equipment-value { 
+    font-weight: 700; 
+    font-size: 11pt; 
+    color: #111827; 
+    margin-top: 1mm; 
+    word-break: break-all; 
+}

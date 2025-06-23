@@ -4,49 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Etiquetas Profissional</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Biblioteca para gerar QR Codes -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-
     <style>
         body { font-family: 'Inter', sans-serif; }
-        
+        .no-print { @media print { display: none; } }
         #preview-card {
-            width: 280px;
-            min-height: 448px;
-            border: 1px solid #d1d5db;
-            background-color: white;
-            padding: 1.25rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transition: min-height 0.2s;
+            width: 280px; min-height: 448px; border: 1px solid #d1d5db; background-color: white;
+            padding: 1.25rem; display: flex; flex-direction: column; align-items: center; text-align: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
-
-        #preview-logo-container { 
-            width: 100%; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            margin-bottom: 0.75rem; 
-            transition: height 0.2s;
-        }
-        #preview-logo { 
-            max-width: 100%; 
-            max-height: 100%;
-            object-fit: contain;
-        }
+        #preview-logo-container { width: 100%; display: flex; justify-content: center; align-items: center; margin-bottom: 0.75rem; transition: height 0.2s; }
+        #preview-logo { max-width: 100%; max-height: 100%; object-fit: contain; }
         .info-text { font-size: 0.9rem; line-height: 1.4; color: #1f2937; }
         #preview-qr-code { margin: 1.25rem 0; }
         .equipment-label { font-size: 0.8rem; color: #4b5563; }
         .equipment-value { font-weight: 700; font-size: 1.125rem; color: #111827; margin-top: 0.125rem; word-break: break-all; }
+        .input-field { border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; border-radius: 0.375rem; width: 100%; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -65,62 +39,76 @@
                     <h2 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">1. Dados da Empresa</h2>
                     <div class="space-y-3">
                          <div>
-                            <label for="logo-upload" class="block text-sm font-medium text-gray-700">Logotipo</label>
+                            <label for="logo-upload" class="block text-sm font-medium text-gray-700">Logotipo (Opcional)</label>
                             <input type="file" id="logo-upload" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100" accept="image/*">
                         </div>
                         <div>
-                            <label for="logo-size" class="block text-sm font-medium text-gray-700">Tamanho do Logo</label>
+                            <label for="logo-size" class="block text-sm font-medium text-gray-700">Tamanho do Logo (<span id="logo-size-value">80</span>px)</label>
                             <input type="range" id="logo-size" min="30" max="160" value="80" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
                         </div>
                         <div>
                             <label for="company-name" class="block text-sm font-medium text-gray-700">Nome da Empresa</label>
-                            <input type="text" id="company-name" value="Nomde da sua empresa" class="mt-1 w-full input-field" placeholder="Nome da sua empresa">
+                            <input type="text" id="company-name" value="Sua Empresa" class="mt-1 w-full input-field" placeholder="Nome da sua empresa">
                         </div>
                         <div>
                             <label for="company-phone" class="block text-sm font-medium text-gray-700">Telefone</label>
-                            <input type="text" id="company-phone" value="0800 000 0000" class="mt-1 w-full input-field" placeholder="Telefone de contacto">
+                            <input type="text" id="company-phone" value="(11) 99999-9999" class="mt-1 w-full input-field" placeholder="Telefone de contato">
                         </div>
                          <div>
                             <label for="company-email" class="block text-sm font-medium text-gray-700">E-mail</label>
-                            <input type="email" id="company-email" value="contato@email.com.br" class="mt-1 w-full input-field" placeholder="E-mail de contacto">
+                            <input type="email" id="company-email" value="contato@suaempresa.com" class="mt-1 w-full input-field" placeholder="E-mail de contato">
                         </div>
                     </div>
                 </section>
 
-                <!-- 2. GERAR E IMPORTAR PLANILHA -->
+                <!-- 2. IMPORTAR DADOS -->
                 <section>
-                    <h2 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">2. Gerar e Importar Planilha</h2>
+                    <h2 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">2. Importar Dados</h2>
                     <div class="space-y-4">
-                        <button id="generate-sheet-btn" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700">
+                        <button id="generate-sheet-btn" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
                             Baixar Planilha Modelo
                         </button>
                         <div>
-                           <label for="fileUpload" class="block text-sm font-medium text-gray-700 mb-2">Fazer Upload da Planilha Preenchida</label>
-                           <input type="file" id="fileUpload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                           <label for="fileUpload" class="block text-sm font-medium text-gray-700 mb-1">Fazer Upload da Planilha</label>
+                           <input type="file" id="fileUpload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100" accept=".csv, .xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                           <p id="file-upload-name" class="text-xs text-gray-500 mt-1 pl-1">Nenhum ficheiro selecionado</p>
                         </div>
                     </div>
                 </section>
                 
-                <!-- 3. GERAÇÃO FINAL -->
+                <!-- 3. OPÇÕES DE GERAÇÃO -->
                 <section>
-                    <h2 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">3. Gerar Ficheiro Final</h2>
+                    <h2 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">3. Opções de Geração</h2>
                      <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Estilo do Layout</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Formato do PDF</label>
                             <div class="flex items-center space-x-4">
                                 <div class="flex items-center">
-                                    <input id="layout-card" name="layout-option" type="radio" value="card" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500" checked>
+                                    <input id="layout-card" name="layout-option" type="radio" value="card" class="h-4 w-4 text-indigo-600 border-gray-300" checked>
                                     <label for="layout-card" class="ml-2 block text-sm text-gray-900">Etiqueta Centralizada</label>
                                 </div>
                                 <div class="flex items-center">
-                                    <input id="layout-fullpage" name="layout-option" type="radio" value="fullpage" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                    <input id="layout-fullpage" name="layout-option" type="radio" value="fullpage" class="h-4 w-4 text-indigo-600 border-gray-300">
                                     <label for="layout-fullpage" class="ml-2 block text-sm text-gray-900">Página Inteira</label>
                                 </div>
                             </div>
                         </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Modo de Saída</label>
+                            <div class="flex items-center space-x-4">
+                                <div class="flex items-center">
+                                    <input id="output-single" name="output-mode" type="radio" value="single" class="h-4 w-4 text-indigo-600 border-gray-300" checked>
+                                    <label for="output-single" class="ml-2 block text-sm text-gray-900">PDF Único</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="output-multiple" name="output-mode" type="radio" value="multiple" class="h-4 w-4 text-indigo-600 border-gray-300">
+                                    <label for="output-multiple" class="ml-2 block text-sm text-gray-900">ZIP (Múltiplos PDFs)</label>
+                                </div>
+                            </div>
+                        </div>
                         
-                        <button id="generate-final-btn" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
-                            Gerar e Baixar PDF
+                        <button id="generate-final-btn" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
+                            Gerar e Baixar
                         </button>
                         <p id="generate-warning" class="text-xs text-center text-gray-500">Faça o upload de uma planilha para habilitar.</p>
                      </div>
@@ -128,23 +116,23 @@
             </div>
         </aside>
 
-        <!-- ÁREA DE PRÉ-VISUALIZAÇÃO CORRIGIDA -->
+        <!-- ÁREA DE PRÉ-VISUALIZAÇÃO -->
         <main class="flex-1 p-8 bg-gray-200 flex flex-col items-center justify-center">
-            <h2 class="text-xl font-bold text-gray-600 mb-4">Pré-visualização da Etiqueta</h2>
+            <h2 class="text-xl font-bold text-gray-600 mb-4 no-print">Pré-visualização da Etiqueta</h2>
             <div id="preview-card">
                  <div id="preview-logo-container" style="height: 80px;">
-                    <img id="preview-logo" src="https://placehold.co/200x60/6366f1/FFFFFF?text=Logo" alt="logo da empresa">
+                    <img id="preview-logo" src="https://placehold.co/200x80/f0f0f0/ffffff?text=Sua+Logo" alt="logo da empresa">
                 </div>
                 
                 <div class="my-2">
-                    <p id="preview-company-name" class="info-text font-semibold">Auvo Tecnologia</p>
-                    <p id="preview-company-phone" class="info-text">0800 000 0662</p>
-                    <p id="preview-company-email" class="info-text">contato@auvo.com.br</p>
+                    <p id="preview-company-name" class="info-text font-semibold">Sua Empresa</p>
+                    <p id="preview-company-phone" class="info-text">(11) 99999-9999</p>
+                    <p id="preview-company-email" class="info-text">contato@suaempresa.com</p>
                 </div>
 
-                <div id="preview-qr-code"></div>
+                <div id="preview-qr-code" class="w-36 h-36"></div>
                 
-                <div class="mt-auto flex flex-col gap-2">
+                <div class="mt-auto flex flex-col gap-2 w-full">
                     <div>
                          <p class="equipment-label">Nome do equipamento</p>
                          <p id="preview-equipment-name" class="equipment-value">Ex: Ar Condicionado</p>
@@ -157,8 +145,8 @@
             </div>
         </main>
     </div>
-
-    <!-- SCRIPT CARREGADO COM CACHE-BUSTING -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}?v={{ timestamp }}" defer></script>
 </body>
 </html>

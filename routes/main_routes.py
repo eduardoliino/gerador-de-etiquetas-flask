@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, jsonify, Response, send_file
-from services.pdf_service import generate_pdf
+from flask import Blueprint, render_template, request, jsonify, Response, send_file, current_app
+from services.pdf_service import generate_labels_from_data
 import pandas as pd
 import io
 
@@ -8,35 +8,21 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
 def index():
-    """Renderiza a página HTML principal."""
     return render_template('index.html')
 
 
-# Endpoint para gerar e baixar a planilha modelo .xlsx
 @main_bp.route('/download-template')
 def download_template():
     """Cria e serve um arquivo .xlsx modelo para download."""
     try:
-        # Define os cabeçalhos das colunas
-        headers = ["Nome", "Identificador", "LINK QR CODE"]
-        # Cria um DataFrame do pandas vazio com esses cabeçalhos
-        df = pd.DataFrame(columns=headers)
-
-        # Cria um buffer de bytes em memória para salvar o arquivo Excel
+        df = pd.DataFrame(columns=["nome", "identificador", "link qr code"])
         buffer = io.BytesIO()
-
-        # Salva o DataFrame como um arquivo Excel no buffer
-        # index=False evita que o pandas salve o índice da linha como uma coluna
-        df.to_excel(buffer, index=False)
-
-        # Reposiciona o "cursor" do buffer para o início
+        df.to_excel(buffer, index=False, engine='openpyxl')
         buffer.seek(0)
-
-        # Usa send_file para enviar o buffer como um anexo para download
         return send_file(
             buffer,
             as_attachment=True,
-            download_name='modelo_etiquetas.xlsx',  # Nome do arquivo que o usuário verá
+            download_name='modelo_etiquetas.xlsx',
             mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
     except Exception as e:
@@ -45,26 +31,25 @@ def download_template():
 
 
 @main_bp.route('/generate', methods=['POST'])
-def generate_labels():
+def generate_labels_route():
     """
-    Endpoint para receber os dados do formulário e da planilha,
-    e retornar o PDF gerado.
+    Recebe os dados do formulário e chama o serviço para gerar o arquivo final.
     """
     try:
-        # Passa os dados do formulário e os arquivos para o serviço de geração
-        pdf_bytes = generate_pdf(request.form, request.files)
 
-        # Retorna o PDF como uma resposta de download
+        static_folder_path = current_app.static_folder
+        file_bytes, mimetype, filename = generate_labels_from_data(
+            request.form, request.files, static_folder_path)
+
         return Response(
-            pdf_bytes,
-            mimetype='application/pdf',
-            headers={'Content-Disposition': 'attachment;filename=etiquetas.pdf'}
+            file_bytes,
+            mimetype=mimetype,
+            headers={'Content-Disposition': f'attachment;filename={filename}'}
         )
+    except (ValueError, FileNotFoundError) as ve:
 
-    except ValueError as ve:
-        # Erro de validação (ex: planilha faltando)
         return jsonify({"error": str(ve)}), 400
     except Exception as e:
-        # Outros erros de servidor
-        print(f"ERRO INESPERADO: {e}")  # Log do erro no console do servidor
-        return jsonify({"error": "Ocorreu um erro interno ao gerar o PDF."}), 500
+
+        print(f"ERRO INESPERADO NA ROTA /generate: {type(e).__name__}: {e}")
+        return jsonify({"error": "Ocorreu um erro interno no servidor."}), 500

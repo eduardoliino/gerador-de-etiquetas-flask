@@ -1,0 +1,82 @@
+@page { 
+    size: A4; 
+    margin: 0; 
+}
+body { 
+    font-family: 'Inter', sans-serif; 
+    margin: 0; 
+}
+.page-container { 
+    width: 210mm; 
+    height: 297mm; 
+    page-break-after: always; 
+    padding: 10mm; 
+    box-sizing: border-box; 
+}
+.etiqueta { 
+    width: 100%; 
+    height: 100%; 
+    padding: 15mm; 
+    box-sizing: border-box; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    text-align: center; 
+    border: 1px solid #b7bac0;
+    justify-content: space-between; 
+}
+
+/* --- Container da Logo  --- */
+.logo-container { 
+    width: 100%; /* Ocupa a largura total */
+    min-height: 40px; /* Garante um espaço mínimo */
+}
+.logo-container img { 
+    max-width: 90%; /* Permite que a logo seja maior */
+    object-fit: contain; /* Mantém a proporção sem distorcer */
+}
+
+/* --- Informações da Empresa  --- */
+.company-info { 
+    margin: 0; 
+}
+.info-text { 
+    font-size: 13pt;
+    line-height: 1.5; 
+    color: #1f2937; 
+}
+.company-name { 
+    font-weight: bold; 
+    font-size: 15pt; 
+}
+
+/* --- QR Code --- */
+.qr-code { 
+    margin: 0; 
+    width: 65mm; 
+    height: 65mm; 
+}
+.qr-code img { 
+    width: 100%; 
+    height: 100%; 
+}
+
+/* --- Rodapé da Etiqueta --- */
+.bottom-container { 
+    margin-top: 0; 
+    width: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 8mm; 
+}
+.equipment-label { 
+    font-size: 14pt; 
+    color: #4b5563; 
+}
+.equipment-value { 
+    font-weight: 700; 
+    font-size: 22pt; 
+    color: #111827; 
+    margin-top: 1mm; 
+    word-break: break-all; 
+}
